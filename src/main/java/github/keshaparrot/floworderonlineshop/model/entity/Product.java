@@ -19,18 +19,17 @@ public class Product {
     private Long id;
 
     private String title;
-
     @Column(columnDefinition = "TEXT")
     private String description;
-
     private int quantity;
+    private String photoPath;
 
     private BigDecimal price;
+    private String category;
 
-    private String photo;
-
+    private boolean refundable;
     private LocalDateTime addTime;
-
     private LocalDateTime modifyTime;
+
 
 }

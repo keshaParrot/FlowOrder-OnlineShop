@@ -29,14 +29,12 @@ public class RefundRequest {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private int quantity;
-
     private BigDecimal refundAmount;
+    private LocalDateTime requestDate;
+    private String reason;
 
     @Enumerated(EnumType.STRING)
     private RefundStatus status;
-
-    private LocalDateTime requestDate;
 
     public RefundRequest() {
         this.requestDate = LocalDateTime.now();

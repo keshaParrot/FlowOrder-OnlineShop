@@ -29,5 +29,8 @@ public class OrderItem {
 
     private BigDecimal price;
 
+    public String getProductName(){
+        return product.getTitle();
+    }
 }
 

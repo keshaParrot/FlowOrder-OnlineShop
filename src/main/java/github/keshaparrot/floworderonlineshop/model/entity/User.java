@@ -1,5 +1,6 @@
 package github.keshaparrot.floworderonlineshop.model.entity;
 
+import github.keshaparrot.floworderonlineshop.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
@@ -20,7 +22,10 @@ public class User {
     private String firstName;
     private String lastName;
     private String password;
-    private String mail;
+    private String email;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
     private boolean verified  = false;
 
     @Embedded
@@ -29,7 +34,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Order> orders;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RefundRequest> refundRequests;
 
+    public String getFullName(){
+        return firstName + " " + lastName;
+    }
 }
