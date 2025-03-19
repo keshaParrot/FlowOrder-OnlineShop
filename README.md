@@ -37,7 +37,8 @@ _ _Note: Ensure you have JDK and Maven installed._ _
 
 ## API Documentation
 
-
+The project includes a Postman collection for testing the API.  
+You can [download the FlowOrder Postman Collection here](./FlowOrder.postman_collection.json).
 
 ## Architecture
 
