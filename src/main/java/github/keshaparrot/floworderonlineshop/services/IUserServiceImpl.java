@@ -3,7 +3,7 @@ package github.keshaparrot.floworderonlineshop.services;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
-import github.keshaparrot.floworderonlineshop.config.JwtUtil;
+import github.keshaparrot.floworderonlineshop.security.JwtUtil;
 import github.keshaparrot.floworderonlineshop.exceptions.UserNotFoundException;
 import github.keshaparrot.floworderonlineshop.model.dto.CreateUserRequest;
 import github.keshaparrot.floworderonlineshop.model.dto.LoginRequest;

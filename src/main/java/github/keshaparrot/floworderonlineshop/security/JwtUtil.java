@@ -1,4 +1,4 @@
-package github.keshaparrot.floworderonlineshop.config;
+package github.keshaparrot.floworderonlineshop.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

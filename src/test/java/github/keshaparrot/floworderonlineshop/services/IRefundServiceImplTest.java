@@ -12,7 +12,7 @@ import github.keshaparrot.floworderonlineshop.model.enums.RefundStatus;
 import github.keshaparrot.floworderonlineshop.model.mappers.OrderMapper;
 import github.keshaparrot.floworderonlineshop.repositories.OrderRepository;
 import github.keshaparrot.floworderonlineshop.repositories.RefundRequestRepository;
-import github.keshaparrot.floworderonlineshop.services.interfaces.IPaymentService;
+import github.keshaparrot.floworderonlineshop.services.interfaces.ITransactionService;
 import github.keshaparrot.floworderonlineshop.services.interfaces.IProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class IRefundServiceImplTest {
     private OrderMapper orderMapper;
 
     @Mock
-    private IPaymentService paymentService;
+    private ITransactionService paymentService;
 
     @Mock
     private IProductService productService;

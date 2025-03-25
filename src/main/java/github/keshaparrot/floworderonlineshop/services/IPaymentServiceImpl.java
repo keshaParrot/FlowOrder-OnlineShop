@@ -1,73 +1,69 @@
 package github.keshaparrot.floworderonlineshop.services;
 
-import github.keshaparrot.floworderonlineshop.model.dto.BillDTO;
-import github.keshaparrot.floworderonlineshop.model.entity.*;
+import github.keshaparrot.floworderonlineshop.exceptions.OrderNotFoundException;
+import github.keshaparrot.floworderonlineshop.exceptions.ProductNotFoundException;
+import github.keshaparrot.floworderonlineshop.exceptions.ProductOutOfStockException;
+import github.keshaparrot.floworderonlineshop.exceptions.UserNotFoundException;
+import github.keshaparrot.floworderonlineshop.model.entity.Order;
+import github.keshaparrot.floworderonlineshop.model.entity.OrderItem;
+import github.keshaparrot.floworderonlineshop.model.entity.Product;
+import github.keshaparrot.floworderonlineshop.model.entity.User;
 import github.keshaparrot.floworderonlineshop.model.enums.BillType;
-import github.keshaparrot.floworderonlineshop.repositories.BillRepository;
+import github.keshaparrot.floworderonlineshop.model.enums.OrderStatus;
+import github.keshaparrot.floworderonlineshop.repositories.OrderRepository;
+import github.keshaparrot.floworderonlineshop.repositories.ProductRepository;
+import github.keshaparrot.floworderonlineshop.repositories.UserRepository;
 import github.keshaparrot.floworderonlineshop.services.interfaces.IPaymentService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.crossstore.ChangeSetPersister;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-@RequiredArgsConstructor
 @Service
+@AllArgsConstructor
 public class IPaymentServiceImpl implements IPaymentService {
-    private final BillRepository billRepository;
-    @Value("${app.sellerName}")
-    private String sellerName;
-    @Value("${app.sellerAddress}")
-    private String sellerAddress;
+
+    private final ITransactionServiceImpl transactionService;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
     @Override
-    public BillDTO createTransaction(User user, Order order, BillType billType) {
-        return toDTO(billRepository.save(
-                Bill.builder()
-                        .issueDate(LocalDateTime.now())
-                        .seller(sellerName)
-                        .buyer(user.getId())
-                        .products(
-                                order.getOrderItems().stream()
-                                        .collect(Collectors.toMap(
-                                                OrderItem::getProductName,
-                                                OrderItem::getQuantity,
-                                                Integer::sum
-                                        ))
-                        )
-                        .totalAmount(
-                                order.getOrderItems().stream()
-                                        .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-                        )
-                        .vat(BigDecimal.valueOf(23))
-                        .paymentMethod("Card")
-                        .status("PAID")
-                        .transactionNumber(UUID.randomUUID())
-                        .salesAddress(sellerAddress)
-                        .Type(billType)
-                        .currency("zl")
-                        .build()
-        ));
+    @Transactional
+    public boolean payOrder(Long userId, Long orderId, String blikCode) {
+        if (!validateBlikCode(blikCode)) return false;
+
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException(userId));
+        if (optionalOrder.isEmpty()) return false;
+
+        Order order = optionalOrder.get();
+        if (!order.getUser().getId().equals(userId) || order.getStatus() != OrderStatus.PENDING) {
+            return false;
+        }
+
+        for (OrderItem item : order.getOrderItems()) {
+            Long productId = item.getProduct().getId();
+            Product product = productRepository.findById(productId).orElseThrow(()-> new ProductNotFoundException(productId));
+            if (product.getQuantity() < item.getQuantity()) {
+                throw new ProductOutOfStockException(productId,product.getQuantity(),item.getQuantity());
+            }
+            else{
+                product.setQuantity(product.getQuantity() - item.getQuantity());
+                productRepository.save(product);
+            }
+        }
+
+        order.setStatus(OrderStatus.PAID);
+        transactionService.createTransaction(user,order, BillType.BUYING);
+        orderRepository.save(order);
+        return true;
     }
 
-    @Override
-    public BillDTO getTransaction(Long id) throws ChangeSetPersister.NotFoundException {
-        return toDTO(billRepository.findById(id).orElseThrow(ChangeSetPersister.NotFoundException::new));
+    private boolean validateBlikCode(String blikCode) {
+        return true; //Later, it will be possible to integrate a real mechanism for checking the code of a blik
     }
 
-    @Override
-    public Page<BillDTO> getAllTransactions(Long userId, Pageable pageable) {
-        return billRepository.findAllByBuyer(userId,pageable).map(this::toDTO);
-    }
-
-    private BillDTO toDTO(Bill bill) {
-        return null;
-    }
 }

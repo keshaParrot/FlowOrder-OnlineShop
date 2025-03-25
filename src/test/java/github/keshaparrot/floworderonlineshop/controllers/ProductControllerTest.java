@@ -1,11 +1,10 @@
 package github.keshaparrot.floworderonlineshop.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import github.keshaparrot.floworderonlineshop.config.JwtUtil;
+import github.keshaparrot.floworderonlineshop.security.JwtUtil;
 import github.keshaparrot.floworderonlineshop.model.dto.CreateProductRequest;
 import github.keshaparrot.floworderonlineshop.model.dto.ProductDTO;
 import github.keshaparrot.floworderonlineshop.services.interfaces.IProductService;
-import github.keshaparrot.floworderonlineshop.services.interfaces.IRefundService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;

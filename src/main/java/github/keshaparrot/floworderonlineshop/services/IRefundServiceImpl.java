@@ -9,7 +9,7 @@ import github.keshaparrot.floworderonlineshop.model.enums.RefundStatus;
 import github.keshaparrot.floworderonlineshop.model.mappers.OrderMapper;
 import github.keshaparrot.floworderonlineshop.repositories.OrderRepository;
 import github.keshaparrot.floworderonlineshop.repositories.RefundRequestRepository;
-import github.keshaparrot.floworderonlineshop.services.interfaces.IPaymentService;
+import github.keshaparrot.floworderonlineshop.services.interfaces.ITransactionService;
 import github.keshaparrot.floworderonlineshop.services.interfaces.IProductService;
 import github.keshaparrot.floworderonlineshop.services.interfaces.IRefundService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class IRefundServiceImpl implements IRefundService {
     private final OrderRepository orderRepository;
     private final RefundRequestRepository refundRequestRepository;
     private final OrderMapper orderMapper;
-    private final IPaymentService paymentService;
+    private final ITransactionService paymentService;
     private final IProductService productService;
 
     @Override

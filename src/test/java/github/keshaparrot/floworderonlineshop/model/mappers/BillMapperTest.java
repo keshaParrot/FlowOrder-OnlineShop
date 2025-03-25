@@ -35,7 +35,6 @@ public class BillMapperTest {
 
     @Test
     public void testToDtoMapping() {
-        // Arrange: створюємо об'єкт Bill з тестовими даними
         Bill bill = new Bill();
         bill.setId(100L);
         bill.setIssueDate(LocalDateTime.of(2025, 3, 17, 10, 0));
@@ -51,22 +50,18 @@ public class BillMapperTest {
         bill.setSalesAddress("Test Address");
         bill.setCurrency("USD");
 
-        // Stub: налаштовуємо мок, щоб при виклику getById(42L) поверталося тестове значення
        User user = User.builder()
                .firstName("John")
                .lastName("Doe")
                .build();
         when(userService.getEntityById(42L)).thenReturn(user);
 
-        // Act: конвертуємо Bill в BillDTO
         BillDTO dto = billMapper.toDto(bill);
 
-        // Assert: перевіряємо, що всі поля мапляться правильно, зокрема buyer
         assertNotNull(dto);
         assertEquals(bill.getId(), dto.getId());
         assertEquals(bill.getIssueDate(), dto.getIssueDate());
         assertEquals(bill.getSeller(), dto.getSeller());
-        // buyer має містити повне ім'я, отримане з DummyUser
         assertEquals("John Doe", dto.getBuyer());
         assertEquals(bill.getProducts(), dto.getProducts());
         assertEquals(bill.getTotalAmount(), dto.getTotalAmount());

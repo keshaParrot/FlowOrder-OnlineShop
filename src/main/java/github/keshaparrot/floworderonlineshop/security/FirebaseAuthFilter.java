@@ -1,9 +1,6 @@
 
 package github.keshaparrot.floworderonlineshop.security;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseToken;
-import github.keshaparrot.floworderonlineshop.config.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;

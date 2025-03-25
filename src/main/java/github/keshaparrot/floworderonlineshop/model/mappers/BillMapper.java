@@ -10,7 +10,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Setter
 @Mapper(componentModel = "spring")
 public abstract class BillMapper {
 
@@ -18,4 +17,9 @@ public abstract class BillMapper {
 
     @Mapping(target = "buyer", expression = "java(userService.getEntityById(bill.getBuyer()).getFullName())")
     public abstract BillDTO toDto(Bill bill);
+
+    @Autowired
+    public void setUserService(IUserService userService) {
+        this.userService = userService;
+    }
 }

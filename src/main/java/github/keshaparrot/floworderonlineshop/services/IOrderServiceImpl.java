@@ -13,10 +13,8 @@ import github.keshaparrot.floworderonlineshop.repositories.OrderRepository;
 import github.keshaparrot.floworderonlineshop.repositories.ProductRepository;
 import github.keshaparrot.floworderonlineshop.repositories.UserRepository;
 import github.keshaparrot.floworderonlineshop.services.interfaces.IOrderService;
-import github.keshaparrot.floworderonlineshop.services.interfaces.IPaymentService;
-import github.keshaparrot.floworderonlineshop.services.interfaces.IProductService;
+import github.keshaparrot.floworderonlineshop.services.interfaces.ITransactionService;
 import lombok.AllArgsConstructor;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +31,7 @@ public class IOrderServiceImpl implements IOrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderMapper orderMapper;
-    private final IPaymentService paymentService;
+    private final ITransactionService paymentService;
 
 
     @Override
@@ -60,6 +58,7 @@ public class IOrderServiceImpl implements IOrderService {
             orderItem.setProduct(product);
             orderItem.setOrder(order);
             orderItem.setQuantity(entry.getValue());
+            orderItem.setPrice(product.getPrice());
             orderItems.add(orderItem);
         }
         order.setOrderItems(orderItems);
@@ -196,39 +195,6 @@ public class IOrderServiceImpl implements IOrderService {
 
         Order order = optionalOrder.get();
         order.setStatus(orderStatus);
-        orderRepository.save(order);
-        return true;
-    }
-
-    @Override
-    @Transactional
-    public boolean payOrder(Long userId, Long orderId) {
-        Optional<Order> optionalOrder = orderRepository.findById(orderId);
-        User user = userRepository.findById(userId).orElseThrow(()-> new OrderNotFoundException(userId));
-        if (optionalOrder.isEmpty()) return false;
-
-        Order order = optionalOrder.get();
-        if (!order.getUser().getId().equals(userId) || order.getStatus() != OrderStatus.PENDING) {
-            return false;
-        }
-
-        for (OrderItem item : order.getOrderItems()) {
-            Product product = productRepository.findById(item.getProduct().getId()).orElse(null);
-            if (product == null || product.getQuantity() < item.getQuantity()) {
-                return false;
-            }
-        }
-
-        for (OrderItem item : order.getOrderItems()) {
-            Product product = productRepository.findById(item.getProduct().getId()).orElse(null);
-            if (product != null) {
-                product.setQuantity(product.getQuantity() - item.getQuantity());
-                productRepository.save(product);
-            }
-        }
-
-        order.setStatus(OrderStatus.PAID);
-        paymentService.createTransaction(user,order, BillType.BUYING);
         orderRepository.save(order);
         return true;
     }

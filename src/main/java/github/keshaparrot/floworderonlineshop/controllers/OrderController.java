@@ -99,13 +99,4 @@ public class OrderController {
                 ? ResponseEntity.ok().body("the order was successfully changed to the order")
                 : ResponseEntity.badRequest().body("error attempting while changing the order to the order");
     }
-
-    @PostMapping("/{orderId}/pay")
-    public ResponseEntity<String> payOrder(@PathVariable Long orderId,
-                                         @RequestParam Long userId) throws ChangeSetPersister.NotFoundException {
-        boolean result = orderService.payOrder(userId, orderId);
-        return result
-                ? ResponseEntity.ok().body("the order was successfully paid successfully")
-                : ResponseEntity.badRequest().body("error attempting while paying the order");
-    }
 }

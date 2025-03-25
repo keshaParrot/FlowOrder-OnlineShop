@@ -1,7 +1,7 @@
 package github.keshaparrot.floworderonlineshop.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import github.keshaparrot.floworderonlineshop.config.JwtUtil;
+import github.keshaparrot.floworderonlineshop.security.JwtUtil;
 import github.keshaparrot.floworderonlineshop.model.dto.OrderDTO;
 import github.keshaparrot.floworderonlineshop.model.dto.OrderRequestDTO;
 import github.keshaparrot.floworderonlineshop.model.enums.OrderStatus;
@@ -300,27 +300,5 @@ public class OrderControllerTest {
                         .param("orderStatus", OrderStatus.PENDING.name()))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("error attempting while changing the order to the order")));
-    }
-
-    @Test
-    public void testPayOrderSuccess() throws Exception {
-        Mockito.when(orderService.payOrder(eq(1L), eq(1L))).thenReturn(true);
-
-        mockMvc.perform(post("/api/v1/orders/1/pay")
-                        .header("Authorization", "Bearer mocked-jwt-token")
-                        .param("userId", "1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("the order was successfully paid successfully")));
-    }
-
-    @Test
-    public void testPayOrderFailure() throws Exception {
-        Mockito.when(orderService.payOrder(eq(1L), eq(1L))).thenReturn(false);
-
-        mockMvc.perform(post("/api/v1/orders/1/pay")
-                        .header("Authorization", "Bearer mocked-jwt-token")
-                        .param("userId", "1"))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("error attempting while paying the order")));
     }
 }

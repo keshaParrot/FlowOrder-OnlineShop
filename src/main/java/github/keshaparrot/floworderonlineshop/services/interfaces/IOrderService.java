@@ -27,5 +27,4 @@ public interface IOrderService {
     Page<OrderDTO> getAll(Pageable pageable);
 
     boolean changeOrderStatus(Long orderId, OrderStatus orderStatus);
-    boolean payOrder(Long userId, Long orderId) throws ChangeSetPersister.NotFoundException;
 }
